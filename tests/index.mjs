@@ -56,23 +56,34 @@ describe('jsonSerializer()', () => {
 		assert.deepEqual(src, dst);
 	});
 
-	test('serialize custom type with explizit packing', () => {
+	test('make sure to serialize nested objects', () => {
 		class MyType {
-			static pack (x) { return x.foo; }
-			static unpack (x) { return new MyType(x); }
 			constructor (foo) { this.foo = foo; }
 		}
-		const {stringify, parse} = jsonSerializer({customTypes: [{cls: MyType}]});
-
 		const src = {
 			myType: new MyType('bar'),
 			foo: [new MyType('bar')]
 		};
+		const {stringify, parse} = jsonSerializer({customTypes: [MyType]});
 		const dst = parse(stringify(src));
 		assert(dst.myType instanceof MyType);
 		assert(dst.foo[0] instanceof MyType);
 		assert.deepEqual(src.myType, dst.myType);
 		assert.deepEqual(src.foo[0], dst.foo[0]);
+	});
+
+	test('serialize custom type with explicit packing', () => {
+		class MyType {
+			static pack (x) { return x.foo; }
+			static unpack (x) { return new MyType(x); }
+			constructor (foo) { this.foo = foo; }
+		}
+		const {stringify, parse} = jsonSerializer({customTypes: [MyType]});
+
+		const src = new MyType('bar');
+		const dst = parse(stringify(src));
+		assert(dst instanceof MyType);
+		assert.deepEqual(src, dst);
 	});
 
 	test('serialize custom type with implizit packing', () => {
