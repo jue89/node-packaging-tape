@@ -28,7 +28,7 @@ function isDict (x) {
 	return isObj(x) && !Array.isArray(x);
 }
 
-export function jsonSerializer ({customTypes = [], useDefaultTypes = true} = {}) {
+export function jsonSerializer ({customTypes = [], useDefaultTypes = true, indent} = {}) {
 	if (!Array.isArray(customTypes)) customTypes = [customTypes];
 	const converter = customTypes.concat(useDefaultTypes ? defaultTypes : []).map((c) => {
 		// c itself is the class to pack
@@ -53,7 +53,7 @@ export function jsonSerializer ({customTypes = [], useDefaultTypes = true} = {})
 		}, true];
 	}
 
-	function stringify (obj, indent) {
+	function stringify (obj, overrideIndent) {
 		return JSON.stringify(obj, (key, value) => {
 			if (isObj(value)) {
 				/* We have to look inside the objects and arrays before JSON.stringify
@@ -77,7 +77,7 @@ export function jsonSerializer ({customTypes = [], useDefaultTypes = true} = {})
 			} else {
 				return value;
 			}
-		}, indent);
+		}, (overrideIndent !== undefined) ? overrideIndent : indent);
 	}
 
 	function parse (json) {

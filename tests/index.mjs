@@ -119,4 +119,12 @@ describe('jsonSerializer()', () => {
 		assert(dst[0] instanceof Buffer);
 		assert.equal(dst[0].toString(), 'hello');
 	});
+
+	test('allow specifying indentation', () => {
+		const {stringify} = jsonSerializer({indent: '\t'});
+		const ser = stringify([1]);
+		assert.equal(ser, '[\n\t1\n]');
+		const serOverride = stringify([1], null);
+		assert.equal(serOverride, '[1]');
+	});
 });
