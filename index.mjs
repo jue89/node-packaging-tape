@@ -32,16 +32,18 @@ export function jsonSerializer ({customTypes = [], useDefaultTypes = true, inden
 	if (!Array.isArray(customTypes)) customTypes = [customTypes];
 	const converter = customTypes.concat(useDefaultTypes ? defaultTypes : []).map((c) => {
 		// c itself is the class to pack
-		if (typeof c === 'function') {
-			c = {cls: c};
-		}
-		assert(typeof c === 'object');
-		return {
-			cls: c.cls,
-			name: c.name || c.cls.name,
-			pack: c.pack || c.cls.pack || ((x) => ({...x})),
-			unpack: c.unpack || c.cls.unpack || ((x) => Object.assign(new c.cls(), x)),
-		};
+		if (typeof c === 'function') c = {cls: c};
+
+		assert(typeof c === 'object', 'customTypes must contain Classes or Objects');
+		const cls = c.cls;
+		assert(typeof cls === 'function', 'Key cls must be a Class');
+		const name = c.name || c.cls.name;
+		assert(typeof name === 'string' && name.length > 0, 'Key name must be a string with non-zero length');
+		const pack = c.pack || c.cls.pack || ((x) => ({...x}));
+		assert(typeof pack === 'function', 'Key pack must be a function');
+		const unpack = c.unpack || c.cls.unpack || ((x) => Object.assign(new c.cls(), x));
+		assert(typeof unpack === 'function', 'Key unpack must be a function');
+		return {cls, name, pack, unpack};
 	});
 
 	function tryPack (value) {
