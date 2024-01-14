@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {describe, test} from 'node:test';
 import {Buffer} from 'node:buffer';
-import {jsonSerializer, defaultTypes} from '../index.mjs';
+import {jsonSerializer} from '../index.mjs';
 
 describe('jsonSerializer()', () => {
 	test('serialize common JS types', () => {
@@ -16,6 +16,32 @@ describe('jsonSerializer()', () => {
 		const dst = parse(json);
 		assert.deepEqual(src, dst);
 
+	});
+
+	test('serialize defaultTypes', () => {
+		const {stringify, parse} = jsonSerializer();
+		const src = {
+			myDate: new Date(),
+			myErr: new Error('foo'),
+			myMap: new Map([[1, 'a'], [2, 'b']]),
+			mySet: new Set([1, 2, 3]),
+		};
+		const dst = parse(stringify(src));
+		assert(dst.myDate instanceof Date);
+		assert.equal(dst.myDate.getDate(), src.myDate.getDate());
+		assert(dst.myErr instanceof Error);
+		assert.equal(dst.myErr.message, src.myErr.message);
+		assert(dst.myMap instanceof Map);
+		assert.deepEqual([...dst.myMap.entries()], [...src.myMap.entries()]);
+		assert(dst.mySet instanceof Set);
+		assert.deepEqual([...dst.mySet.values()], [...src.mySet.values()]);
+	});
+
+	test('opt-out defaultTypes', () => {
+		const {stringify, parse} = jsonSerializer({useDefaultTypes: false});
+		const src = new Error('foo');
+		const dst = parse(stringify(src));
+		assert(!(dst instanceof Error));
 	});
 
 	test('serialize custom type with explizit packing', () => {
@@ -65,23 +91,4 @@ describe('jsonSerializer()', () => {
 		assert(dst[0] instanceof Buffer);
 		assert.equal(dst[0].toString(), 'hello');
 	});
-});
-
-test('defaultTypes', () => {
-	const {stringify, parse} = jsonSerializer({customTypes: defaultTypes});
-	const src = {
-		myDate: new Date(),
-		myErr: new Error('foo'),
-		myMap: new Map([[1, 'a'], [2, 'b']]),
-		mySet: new Set([1, 2, 3]),
-	};
-	const dst = parse(stringify(src));
-	assert(dst.myDate instanceof Date);
-	assert.equal(dst.myDate.getDate(), src.myDate.getDate());
-	assert(dst.myErr instanceof Error);
-	assert.equal(dst.myErr.message, src.myErr.message);
-	assert(dst.myMap instanceof Map);
-	assert.deepEqual([...dst.myMap.entries()], [...src.myMap.entries()]);
-	assert(dst.mySet instanceof Set);
-	assert.deepEqual([...dst.mySet.values()], [...src.mySet.values()]);
 });

@@ -24,8 +24,8 @@ function isDict (x) {
 	return isObj(x) && !Array.isArray(x);
 }
 
-export function jsonSerializer ({customTypes = []} = {}) {
-	const converter = customTypes.map((c) => {
+export function jsonSerializer ({customTypes = [], useDefaultTypes = true} = {}) {
+	const converter = customTypes.concat(useDefaultTypes ? defaultTypes : []).map((c) => {
 		return {
 			cls: c.cls,
 			pack: c.pack || c.cls.pack || ((x) => ({...x})),
