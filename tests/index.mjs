@@ -86,6 +86,23 @@ describe('jsonSerializer()', () => {
 		assert.deepEqual(src, dst);
 	});
 
+	test('override class names', () => {
+		class MyType {
+			constructor (foo) { this.foo = foo; }
+		}
+		const {stringify, parse} = jsonSerializer({customTypes: [{
+			cls: MyType,
+			name: 'FooBar'
+		}]});
+
+		const src = new MyType('foo');
+		const ser = stringify(src);
+		assert.equal(JSON.parse(ser).type, 'FooBar');
+		const dst = parse(ser);
+		assert(dst instanceof MyType);
+		assert.deepEqual(src, dst);
+	});
+
 	test('serialize with external packers', () => {
 		const {stringify, parse} = jsonSerializer({customTypes: [{
 			cls: Buffer,

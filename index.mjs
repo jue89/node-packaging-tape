@@ -38,6 +38,7 @@ export function jsonSerializer ({customTypes = [], useDefaultTypes = true} = {})
 		assert(typeof c === 'object');
 		return {
 			cls: c.cls,
+			name: c.name || c.cls.name,
 			pack: c.pack || c.cls.pack || ((x) => ({...x})),
 			unpack: c.unpack || c.cls.unpack || ((x) => Object.assign(new c.cls(), x)),
 		};
@@ -47,7 +48,7 @@ export function jsonSerializer ({customTypes = [], useDefaultTypes = true} = {})
 		const conv = converter.find((c) => value instanceof c.cls);
 		if (!conv) return [value, false];
 		return [{
-			type: conv.cls.name,
+			type: conv.name,
 			value: conv.pack(value)
 		}, true];
 	}
@@ -84,7 +85,7 @@ export function jsonSerializer ({customTypes = [], useDefaultTypes = true} = {})
 			if (!isDict(value)) return value;
 			const {type} = value;
 			if (!type) return value;
-			const conv = converter.find((c) => type === c.cls.name);
+			const conv = converter.find((c) => type === c.name);
 			if (!conv) return value;
 			return conv.unpack(value.value);
 		});
