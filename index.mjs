@@ -1,3 +1,7 @@
+function assert (cond, msg) {
+	if (!cond) throw new Error(msg || 'Assertion failed');
+}
+
 export const defaultTypes = [{
 	cls: Date,
 	pack: (x) => x.toISOString(),
@@ -25,7 +29,13 @@ function isDict (x) {
 }
 
 export function jsonSerializer ({customTypes = [], useDefaultTypes = true} = {}) {
+	assert(Array.isArray(customTypes), 'Custom types must be an array');
 	const converter = customTypes.concat(useDefaultTypes ? defaultTypes : []).map((c) => {
+		// c itself is the class to pack
+		if (typeof c === 'function') {
+			c = {cls: c};
+		}
+		assert(typeof c === 'object');
 		return {
 			cls: c.cls,
 			pack: c.pack || c.cls.pack || ((x) => ({...x})),
