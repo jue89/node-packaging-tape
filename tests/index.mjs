@@ -24,7 +24,7 @@ describe('jsonSerializer()', () => {
 			static unpack (x) { return new MyType(x); }
 			constructor (foo) { this.foo = foo; }
 		}
-		const {stringify, parse} = jsonSerializer([{cls: MyType}]);
+		const {stringify, parse} = jsonSerializer({customTypes: [{cls: MyType}]});
 
 		const src = {
 			myType: new MyType('bar'),
@@ -41,7 +41,7 @@ describe('jsonSerializer()', () => {
 		class MyType {
 			constructor (foo) { this.foo = foo; }
 		}
-		const {stringify, parse} = jsonSerializer([{cls: MyType}]);
+		const {stringify, parse} = jsonSerializer({customTypes: [{cls: MyType}]});
 
 		const src = new MyType('foo');
 		const dst = parse(stringify(src));
@@ -50,11 +50,11 @@ describe('jsonSerializer()', () => {
 	});
 
 	test('serialize with external packers', () => {
-		const {stringify, parse} = jsonSerializer([{
+		const {stringify, parse} = jsonSerializer({customTypes: [{
 			cls: Buffer,
 			pack: (x) => x.toString('hex'),
 			unpack: (x) => Buffer.from(x, 'hex')
-		}]);
+		}]});
 
 		const src = [Buffer.from('hello')];
 		const ser = stringify(src);
@@ -68,7 +68,7 @@ describe('jsonSerializer()', () => {
 });
 
 test('defaultTypes', () => {
-	const {stringify, parse} = jsonSerializer(defaultTypes);
+	const {stringify, parse} = jsonSerializer({customTypes: defaultTypes});
 	const src = {
 		myDate: new Date(),
 		myErr: new Error('foo'),
