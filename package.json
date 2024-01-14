@@ -3,7 +3,11 @@
   "version": "0.0.0",
   "description": "Helper for (de)serialization",
   "exports": {
-    ".": "./index.mjs"
+    ".": "./index.mjs",
+    "./buffer": {
+      "node": "./buffer-node.mjs",
+      "default": "./buffer.mjs"
+    }
   },
   "scripts": {
     "test": "node --test tests/*.mjs",
