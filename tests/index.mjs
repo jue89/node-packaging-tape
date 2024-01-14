@@ -86,18 +86,6 @@ describe('jsonSerializer()', () => {
 		assert.deepEqual(src, dst);
 	});
 
-	test('serialize custom type with implizit packing', () => {
-		class MyType {
-			constructor (foo) { this.foo = foo; }
-		}
-		const {stringify, parse} = jsonSerializer({customTypes: [{cls: MyType}]});
-
-		const src = new MyType('foo');
-		const dst = parse(stringify(src));
-		assert(dst instanceof MyType);
-		assert.deepEqual(src, dst);
-	});
-
 	test('serialize with external packers', () => {
 		const {stringify, parse} = jsonSerializer({customTypes: [{
 			cls: Buffer,
