@@ -49,7 +49,7 @@ describe('jsonSerializer()', () => {
 			constructor (foo) { this.foo = foo; }
 		}
 
-		const {stringify, parse} = jsonSerializer({customTypes: [MyType]});
+		const {stringify, parse} = jsonSerializer({customTypes: MyType});
 		const src = new MyType('foo');
 		const dst = parse(stringify(src));
 		assert(dst instanceof MyType);

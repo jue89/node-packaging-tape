@@ -29,7 +29,7 @@ function isDict (x) {
 }
 
 export function jsonSerializer ({customTypes = [], useDefaultTypes = true} = {}) {
-	assert(Array.isArray(customTypes), 'Custom types must be an array');
+	if (!Array.isArray(customTypes)) customTypes = [customTypes];
 	const converter = customTypes.concat(useDefaultTypes ? defaultTypes : []).map((c) => {
 		// c itself is the class to pack
 		if (typeof c === 'function') {
