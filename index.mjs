@@ -51,7 +51,7 @@ export function jsonSerializer ({customTypes = [], useDefaultTypes = true, inden
 		if (!conv) return [value, false];
 		return [{
 			type: conv.name,
-			value: conv.pack(value)
+			data: conv.pack(value)
 		}, true];
 	}
 
@@ -89,7 +89,7 @@ export function jsonSerializer ({customTypes = [], useDefaultTypes = true, inden
 			if (!type) return value;
 			const conv = converter.find((c) => type === c.name);
 			if (!conv) return value;
-			return conv.unpack(value.value);
+			return conv.unpack(value.data);
 		});
 	}
 

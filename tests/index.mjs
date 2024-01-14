@@ -114,7 +114,7 @@ describe('jsonSerializer()', () => {
 		const ser = stringify(src);
 		const parsedSer = JSON.parse(ser);
 		assert.equal(parsedSer[0].type, 'Buffer');
-		assert.equal(parsedSer[0].value, '68656c6c6f');
+		assert.equal(parsedSer[0].data, '68656c6c6f');
 		const dst = parse(ser);
 		assert(dst[0] instanceof Buffer);
 		assert.equal(dst[0].toString(), 'hello');
